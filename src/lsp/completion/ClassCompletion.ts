@@ -37,16 +37,12 @@ export class ClassCompletion implements CompletionInterface {
   }
 
   public generate(_line: number, _column: number, lines: string[]): Promise<CompletionItem[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       this.currentLines = lines;
-      this.loadCache().catch(() => {
-        reject();
-      });
-      const items: CompletionItem[] = [];
+      this.loadCache().then().catch();
+      let items: CompletionItem[] = [];
       if (ClassCompletion.cache && ClassCompletion.cacheSourceFileName == this.cacheFileName) {
-        for (const value of ClassCompletion.cache.values()){
-          items.push(value);
-        }
+        items = Array.from(ClassCompletion.cache.values());
       }
       resolve(items);
     });
@@ -58,13 +54,14 @@ export class ClassCompletion implements CompletionInterface {
    * @param _line
    * @param _column
    */
-  private loadCache() {
+  private loadCache(): Promise<void> {
     return new Promise((resolve, _reject) => {
       this.specialClassPuller.then((classes: string) => {
         ClassCompletion.cache = this.parserSpecialClasses(classes)
         ClassCompletion.cacheSourceFileName = this.cacheFileName;
-
-      }, ()=> {
+        return resolve();
+      }, (cause)=> {
+        console.log(cause);
         ClassCompletion.cache = this.generateClassCompletion(<string[]>this.currentLines)
         ClassCompletion.cacheSourceFileName = this.cacheFileName;
         return resolve();

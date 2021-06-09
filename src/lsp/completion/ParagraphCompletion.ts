@@ -35,22 +35,16 @@ export class ParagraphCompletion implements CompletionInterface {
     }
 
     public generate(line: number, column: number, lines: string[]): Promise<CompletionItem[]> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             this.currentLines = lines;
             this.lineNumber = line;
             this.rangeColumn = CompletionUtils.findWordStartWithinLine(column, lines[line]) - 1;
-            this.loadCache().catch(() => {
-                reject();
-            });
-            const items: CompletionItem[] = [];
+            this.loadCache().then().catch();
+            let items: CompletionItem[] = [];
             if (ParagraphCompletion.cache && ParagraphCompletion.cacheSourceFileName == this.cacheFileName) {
-                for (const value of ParagraphCompletion.cache.values()) {
-                    items.push(value);
-                }
+                items = Array.from(ParagraphCompletion.cache.values());
             } else {
-                for (const value of this.generateParagraphCompletion(this.currentLines, false).values()) {
-                    items.push(value);
-                }
+                items = Array.from(this.generateParagraphCompletion(this.currentLines, false).values());
             }
             resolve(items);
         });
@@ -62,7 +56,7 @@ export class ParagraphCompletion implements CompletionInterface {
      * @param _line
      * @param _column
      */
-    private loadCache() {
+    private loadCache(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.sourceOfCompletions.then((sourceOfCompletions) => {
                 if (sourceOfCompletions == "local") {

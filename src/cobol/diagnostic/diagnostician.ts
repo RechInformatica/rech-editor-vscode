@@ -68,7 +68,7 @@ export class Diagnostician {
     return new Promise<CobolDiagnostic>((resolve, reject) => {
       // If not a cobol processable source
       const documentPath = new Path(textDocument.uri);
-      if (documentPath.extension().toUpperCase() != ".CBL") {
+      if (documentPath.extension().toUpperCase() != ".CBL" || documentPath.extension().toUpperCase() != ".COB") {
         return reject();
       }
       const dir = new File(DIAGNOSTIC_ROOT_DIR + require("os").userInfo().username + "\\");

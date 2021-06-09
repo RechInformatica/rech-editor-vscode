@@ -86,7 +86,7 @@ connection.onInitialize(async (params: InitializeParams) => {
         resolveProvider: true
       },
       codeActionProvider: true,
-      foldingRangeProvider: true,
+      foldingRangeProvider: false,
       renameProvider: true,
       documentOnTypeFormattingProvider: {
         firstTriggerCharacter: "\n",

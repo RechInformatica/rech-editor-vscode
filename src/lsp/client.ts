@@ -1,5 +1,5 @@
 import { ExtensionContext } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ErrorCodes, LanguageClient, LanguageClientOptions, ResponseError, ServerOptions, TransportKind } from 'vscode-languageclient';
 import { Editor } from '../editor/editor';
 import * as path from 'path';
 import { configuration } from '../helpers/configuration';
@@ -242,7 +242,7 @@ export class Client {
 					reject();
 				});
 			} else {
-				reject();
+				reject("No SpecialClassPuller avaliable");
 			}
 		});
 	}
